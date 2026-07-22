@@ -25,7 +25,7 @@ export function EmptyState({
         <p className="mx-auto max-w-sm text-sm text-muted-foreground">{description}</p>
       </div>
       {actionLabel && actionHref ? (
-        <Button render={<Link href={actionHref} />} className="mt-2 cursor-pointer">
+        <Button render={<Link href={actionHref} />} className="mt-2 cursor-pointer rounded-full px-4">
           {actionLabel}
         </Button>
       ) : null}

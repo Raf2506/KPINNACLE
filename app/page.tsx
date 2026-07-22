@@ -53,7 +53,7 @@ export default function DashboardPage() {
   const kpis = kpisQuery.data ?? [];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-7">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">Dashboard</h1>
         <p className="text-sm text-muted-foreground">
@@ -61,7 +61,7 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           label="Overall score"
           value={`${Math.round(metrics.overallScore)}%`}
@@ -79,6 +79,7 @@ export default function DashboardPage() {
           value={metrics.atRiskCount}
           icon={AlertTriangle}
           hint="At-risk + behind KPIs"
+          tone="accent"
         />
         <StatCard
           label="Employees"
@@ -88,7 +89,7 @@ export default function DashboardPage() {
         />
       </div>
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
         <Card>
           <CardHeader>
             <CardTitle>Overall score</CardTitle>
@@ -157,14 +158,14 @@ export default function DashboardPage() {
 
 function DashboardSkeleton() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-7">
       <Skeleton className="h-8 w-48" />
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
           <Skeleton key={i} className="h-28" />
         ))}
       </div>
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
         {Array.from({ length: 3 }).map((_, i) => (
           <Skeleton key={i} className="h-64" />
         ))}

@@ -40,20 +40,33 @@ export function StatusDonut({ distribution }: { distribution: Record<Status, num
   const summary = STATUS_ORDER.map((s) => `${STATUS_LABEL[s]}: ${distribution[s]}`).join(", ");
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      <div role="img" aria-label={`KPI status distribution — ${summary}`}>
-        <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[200px]">
+    <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-center sm:justify-center">
+      <div role="img" aria-label={`KPI status distribution — ${summary}`} className="relative shrink-0">
+        <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[180px]">
           <PieChart>
             <ChartTooltip content={<ChartTooltipContent nameKey="label" hideLabel />} />
-            <Pie data={data} dataKey="value" nameKey="label" innerRadius={55} outerRadius={80} strokeWidth={2}>
+            <Pie
+              data={data}
+              dataKey="value"
+              nameKey="label"
+              innerRadius={62}
+              outerRadius={84}
+              paddingAngle={2}
+              cornerRadius={4}
+              strokeWidth={0}
+            >
               {data.map((entry) => (
                 <Cell key={entry.status} fill={STATUS_COLOR_VAR[entry.status]} />
               ))}
             </Pie>
           </PieChart>
         </ChartContainer>
+        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+          <span className="font-mono text-2xl font-semibold tabular-nums text-foreground">{total}</span>
+          <span className="text-xs text-muted-foreground">KPIs</span>
+        </div>
       </div>
-      <ul className="grid w-full grid-cols-2 gap-x-4 gap-y-2 text-sm">
+      <ul className="w-full max-w-[180px] space-y-2.5 text-sm">
         {STATUS_ORDER.map((status) => (
           <li key={status} className="flex items-center gap-2">
             <span

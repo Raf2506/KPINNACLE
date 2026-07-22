@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { AvatarInitials } from "@/components/avatar-initials";
 import { EmployeeFormDialog } from "@/components/employee-form-dialog";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { ErrorState } from "@/components/error-state";
@@ -43,7 +44,7 @@ export default function EmployeesPage() {
         </div>
         <EmployeeFormDialog
           trigger={
-            <Button className="cursor-pointer gap-1.5">
+            <Button className="cursor-pointer gap-1.5 rounded-full px-4">
               <Plus className="h-4 w-4" />
               Add employee
             </Button>
@@ -74,7 +75,7 @@ export default function EmployeesPage() {
             </p>
           </div>
           <EmployeeFormDialog
-            trigger={<Button className="mt-2 cursor-pointer">Add employee</Button>}
+            trigger={<Button className="mt-2 cursor-pointer rounded-full px-4">Add employee</Button>}
           />
         </div>
       ) : (
@@ -90,11 +91,14 @@ export default function EmployeesPage() {
               <Card key={employee.id} className="flex flex-col">
                 <CardHeader>
                   <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
-                      <CardTitle className="truncate">{employee.name}</CardTitle>
-                      <CardDescription className="truncate">
-                        {employee.role} · {employee.department}
-                      </CardDescription>
+                    <div className="flex min-w-0 items-center gap-3">
+                      <AvatarInitials name={employee.name} />
+                      <div className="min-w-0">
+                        <CardTitle className="truncate">{employee.name}</CardTitle>
+                        <CardDescription className="truncate">
+                          {employee.role} · {employee.department}
+                        </CardDescription>
+                      </div>
                     </div>
                     <div className="flex shrink-0 gap-1">
                       <EmployeeFormDialog
