@@ -1,0 +1,30 @@
+import type { LucideIcon } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+
+export function StatCard({
+  label,
+  value,
+  icon: Icon,
+  hint,
+  className,
+}: {
+  label: string;
+  value: React.ReactNode;
+  icon: LucideIcon;
+  hint?: string;
+  className?: string;
+}) {
+  return (
+    <Card className={cn("gap-3", className)}>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle className="text-sm font-medium text-muted-foreground">{label}</CardTitle>
+        <Icon className="h-4 w-4 text-muted-foreground" strokeWidth={2} aria-hidden="true" />
+      </CardHeader>
+      <CardContent>
+        <div className="font-mono text-2xl font-semibold tabular-nums text-foreground">{value}</div>
+        {hint ? <p className="mt-1 text-xs text-muted-foreground">{hint}</p> : null}
+      </CardContent>
+    </Card>
+  );
+}

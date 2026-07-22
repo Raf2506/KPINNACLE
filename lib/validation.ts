@@ -27,6 +27,9 @@ export const kpiInputSchema = z.object({
 
 export const kpiUpdateSchema = kpiInputSchema.partial();
 
+export type EmployeeInput = z.infer<typeof employeeInputSchema>;
+export type KpiInput = z.infer<typeof kpiInputSchema>;
+
 export function zodIssues(error: z.ZodError) {
   return error.flatten();
 }
