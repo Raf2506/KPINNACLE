@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { StatusBadge } from "@/components/status-badge";
+import { StatusBadge, STATUS_LABEL } from "@/components/status-badge";
 import { CategoryBadge, CATEGORY_LABEL } from "@/components/category-badge";
 import { AiBadge } from "@/components/ai-badge";
 import { achievementPct, CATEGORIES, STATUSES } from "@/lib/metrics";
@@ -28,26 +28,21 @@ import type { Kpi } from "@/lib/types";
 
 type SortKey = "title" | "employee" | "category" | "status" | "achievement" | "weight";
 
-const STATUS_LABEL: Record<string, string> = {
-  NOT_STARTED: "Not started",
-  ON_TRACK: "On track",
-  AT_RISK: "At risk",
-  BEHIND: "Behind",
-};
-
 export function KpiTable({
   kpis,
   showEmployeeColumn = true,
   renderActions,
   emptyMessage = "No KPIs match these filters.",
+  defaultEmployeeId,
 }: {
   kpis: Kpi[];
   showEmployeeColumn?: boolean;
   renderActions?: (kpi: Kpi) => React.ReactNode;
   emptyMessage?: string;
+  defaultEmployeeId?: string;
 }) {
   const [search, setSearch] = useState("");
-  const [employeeFilter, setEmployeeFilter] = useState("all");
+  const [employeeFilter, setEmployeeFilter] = useState(defaultEmployeeId ?? "all");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [sortKey, setSortKey] = useState<SortKey>("title");
