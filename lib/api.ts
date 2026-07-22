@@ -8,16 +8,20 @@ import type {
   ReviewCycle,
   Status,
 } from "@/lib/types";
+import type { RiskDetectionResult } from "@/lib/ai/schemas";
 
 export class ApiError extends Error {
   status: number;
   issues?: unknown;
+  /** Machine-readable error code, e.g. an LlmErrorCode from lib/llm.ts, when present. */
+  code?: string;
 
-  constructor(message: string, status: number, issues?: unknown) {
+  constructor(message: string, status: number, issues?: unknown, code?: string) {
     super(message);
     this.name = "ApiError";
     this.status = status;
     this.issues = issues;
+    this.code = code;
   }
 }
 
@@ -29,7 +33,7 @@ async function request<T>(url: string, init?: RequestInit): Promise<T> {
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({ error: res.statusText }));
-    throw new ApiError(body.error ?? "Request failed", res.status, body.issues);
+    throw new ApiError(body.error ?? "Request failed", res.status, body.issues, body.code);
   }
 
   if (res.status === 204) {
@@ -99,4 +103,25 @@ export function deleteKpi(id: string) {
 
 export function getCycles() {
   return request<ReviewCycle[]>("/api/cycles");
+}
+
+export interface CachedAiResult<T> {
+  cached: { payload: T; updatedAt: string } | null;
+}
+
+export interface AiResult<T> {
+  payload: T;
+  updatedAt: string;
+}
+
+export function getCachedRiskDetection(cycleId?: string) {
+  const qs = cycleId ? `?cycleId=${encodeURIComponent(cycleId)}` : "";
+  return request<CachedAiResult<RiskDetectionResult>>(`/api/ai/risk${qs}`);
+}
+
+export function generateRiskDetection(cycleId?: string) {
+  return request<AiResult<RiskDetectionResult>>("/api/ai/risk", {
+    method: "POST",
+    body: JSON.stringify({ cycleId }),
+  });
 }

@@ -17,6 +17,8 @@ import { CategoryBarChart } from "@/components/charts/category-bar-chart";
 import { EmployeeScoreBars } from "@/components/charts/employee-score-bars";
 import { NeedsAttentionList } from "@/components/needs-attention-list";
 import { HighlightsPanel } from "@/components/highlights-panel";
+import { RiskDetectionPanel } from "@/components/risk-detection-panel";
+import { AiBadge } from "@/components/ai-badge";
 import { KpiTable } from "@/components/kpi-table";
 import { EmptyState } from "@/components/empty-state";
 import { ErrorState } from "@/components/error-state";
@@ -207,6 +209,19 @@ function DashboardPageContent() {
           </CardContent>
         </Card>
       </div>
+
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <CardTitle>Risk Detection</CardTitle>
+            <AiBadge />
+          </div>
+          <CardDescription>Which KPIs are most likely to slip this cycle, and why</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <RiskDetectionPanel cycleId={metrics.cycle.id} />
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
