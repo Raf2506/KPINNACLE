@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ArrowDown, ArrowUp, ArrowUpDown, Search } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, Download, Search } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -23,6 +24,7 @@ import { CategoryBadge, CATEGORY_LABEL } from "@/components/category-badge";
 import { AiBadge } from "@/components/ai-badge";
 import { achievementPct, CATEGORIES, STATUSES } from "@/lib/metrics";
 import { formatUnitValue } from "@/lib/format";
+import { downloadCsv, toCsv } from "@/lib/csv";
 import { cn } from "@/lib/utils";
 import type { Kpi } from "@/lib/types";
 
@@ -116,6 +118,33 @@ export function KpiTable({
       setSortKey(key);
       setSortDir("asc");
     }
+  }
+
+  function handleExportCsv() {
+    const headers = [
+      "Title",
+      ...(showEmployeeColumn ? ["Employee"] : []),
+      "Category",
+      "Current",
+      "Target",
+      "Unit",
+      "Weight (%)",
+      "Achievement (%)",
+      "Status",
+    ];
+    const data = rows.map(({ kpi, achievement }) => [
+      kpi.title,
+      ...(showEmployeeColumn ? [kpi.employee?.name ?? ""] : []),
+      CATEGORY_LABEL[kpi.category],
+      kpi.current,
+      kpi.target,
+      kpi.unit,
+      kpi.weight,
+      Math.round(achievement),
+      STATUS_LABEL[kpi.status],
+    ]);
+    const date = new Date().toISOString().slice(0, 10);
+    downloadCsv(toCsv(headers, data), `kpis-${date}.csv`);
   }
 
   function SortHeader({
@@ -214,6 +243,17 @@ export function KpiTable({
             ))}
           </SelectContent>
         </Select>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={handleExportCsv}
+          disabled={rows.length === 0}
+          className="w-full cursor-pointer gap-1.5 sm:ml-auto sm:w-auto"
+        >
+          <Download className="h-3.5 w-3.5" aria-hidden="true" />
+          Export CSV
+        </Button>
       </div>
 
       <div className="overflow-x-auto rounded-lg border border-border">
