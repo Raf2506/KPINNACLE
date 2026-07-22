@@ -7,6 +7,7 @@ export function StatCard({
   value,
   icon: Icon,
   hint,
+  trend,
   tone = "primary",
   className,
 }: {
@@ -14,6 +15,7 @@ export function StatCard({
   value: React.ReactNode;
   icon: LucideIcon;
   hint?: string;
+  trend?: React.ReactNode;
   tone?: "primary" | "accent";
   className?: string;
 }) {
@@ -31,7 +33,10 @@ export function StatCard({
         </span>
       </CardHeader>
       <CardContent>
-        <div className="font-mono text-2xl font-semibold tabular-nums text-foreground">{value}</div>
+        <div className="flex items-baseline justify-between gap-2">
+          <div className="font-mono text-2xl font-semibold tabular-nums text-foreground">{value}</div>
+          {trend}
+        </div>
         {hint ? <p className="mt-1 text-xs text-muted-foreground">{hint}</p> : null}
       </CardContent>
     </Card>
