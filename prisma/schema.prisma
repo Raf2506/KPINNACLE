@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Category {
+  SALES
+  OPERATIONS
+  COMPLIANCE
+  DEVELOPMENT
+}
+
+enum Status {
+  NOT_STARTED
+  ON_TRACK
+  AT_RISK
+  BEHIND
+}
+
+model ReviewCycle {
+  id        String   @id @default(cuid())
+  name      String
+  startDate DateTime
+  endDate   DateTime
+  isActive  Boolean  @default(true)
+  kpis      Kpi[]
+}
+
+model Employee {
+  id         String @id @default(cuid())
+  name       String
+  role       String
+  department String
+  kpis       Kpi[]
+}
+
+model Kpi {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  category    Category
+  weight      Float
+  target      Float
+  current     Float
+  unit        String
+  status      Status
+  aiGenerated Boolean  @default(false)
+  employee    Employee    @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  employeeId  String
+  cycle       ReviewCycle @relation(fields: [cycleId], references: [id])
+  cycleId     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
