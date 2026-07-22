@@ -30,7 +30,7 @@ export function CategoryBarChart({ breakdown }: { breakdown: Record<Category, nu
   }));
 
   return (
-    <ChartContainer config={chartConfig} className="max-h-[240px] w-full">
+    <ChartContainer config={chartConfig} className="h-[220px] w-full">
       <BarChart data={data} layout="vertical" margin={{ left: 8, right: 16 }}>
         <CartesianGrid horizontal={false} stroke="var(--color-border)" />
         <XAxis
@@ -44,7 +44,8 @@ export function CategoryBarChart({ breakdown }: { breakdown: Record<Category, nu
         <YAxis
           type="category"
           dataKey="label"
-          width={90}
+          width={82}
+          interval={0}
           tick={{ fill: "var(--color-foreground)", fontSize: 12 }}
           axisLine={false}
           tickLine={false}
