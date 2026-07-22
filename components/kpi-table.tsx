@@ -32,6 +32,14 @@ type SortKey = "title" | "employee" | "category" | "status" | "achievement" | "w
 
 const CATEGORY_SELECT_ITEMS: Record<string, string> = { all: "All categories", ...CATEGORY_LABEL };
 const STATUS_SELECT_ITEMS: Record<string, string> = { all: "All statuses", ...STATUS_LABEL };
+const SORT_LABEL: Record<SortKey, string> = {
+  title: "KPI title",
+  employee: "Employee",
+  category: "Category",
+  weight: "Weight",
+  achievement: "Achievement",
+  status: "Status",
+};
 
 export function KpiTable({
   kpis,
@@ -174,6 +182,13 @@ export function KpiTable({
 
   const columnCount = 6 + (showEmployeeColumn ? 1 : 0) + (renderActions ? 1 : 0);
 
+  const sortSelectItems = useMemo(() => {
+    const entries = Object.entries(SORT_LABEL).filter(
+      ([key]) => showEmployeeColumn || key !== "employee"
+    );
+    return Object.fromEntries(entries);
+  }, [showEmployeeColumn]);
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
@@ -256,7 +271,42 @@ export function KpiTable({
         </Button>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-border">
+      {/* Mobile-only sort control — column-header sorting doesn't translate to the card list below. */}
+      <div className="flex items-center gap-2 sm:hidden">
+        <Select
+          value={sortKey}
+          onValueChange={(value) => value && setSortKey(value as SortKey)}
+          items={sortSelectItems}
+        >
+          <SelectTrigger className="flex-1" aria-label="Sort by">
+            <SelectValue placeholder="Sort by" />
+          </SelectTrigger>
+          <SelectContent>
+            {Object.entries(sortSelectItems).map(([key, label]) => (
+              <SelectItem key={key} value={key}>
+                {label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          className="shrink-0 cursor-pointer"
+          onClick={() => setSortDir((dir) => (dir === "asc" ? "desc" : "asc"))}
+          aria-label={sortDir === "asc" ? "Sort ascending" : "Sort descending"}
+        >
+          {sortDir === "asc" ? (
+            <ArrowUp className="h-4 w-4" aria-hidden="true" />
+          ) : (
+            <ArrowDown className="h-4 w-4" aria-hidden="true" />
+          )}
+        </Button>
+      </div>
+
+      {/* Table — sm and up */}
+      <div className="hidden overflow-x-auto rounded-lg border border-border sm:block">
         <Table>
           <TableHeader>
             <TableRow>
@@ -317,6 +367,69 @@ export function KpiTable({
             )}
           </TableBody>
         </Table>
+      </div>
+
+      {/* Card list — below sm, so there's nothing to scroll sideways to see */}
+      <div className="space-y-3 sm:hidden">
+        {rows.length === 0 ? (
+          <p className="rounded-lg border border-dashed border-border py-10 text-center text-sm text-muted-foreground">
+            {emptyMessage}
+          </p>
+        ) : (
+          rows.map(({ kpi, achievement }) => (
+            <div key={kpi.id} className="rounded-lg border border-border bg-card p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="truncate font-medium text-foreground">{kpi.title}</p>
+                    {kpi.aiGenerated && <AiBadge />}
+                  </div>
+                  {showEmployeeColumn && (
+                    <p className="truncate text-xs text-muted-foreground">
+                      {kpi.employee?.name ?? "Unassigned"}
+                    </p>
+                  )}
+                </div>
+                <StatusBadge status={kpi.status} />
+              </div>
+
+              <div className="mt-3 flex items-center justify-between gap-2">
+                <CategoryBadge category={kpi.category} />
+                <span
+                  className={cn(
+                    "font-mono text-base font-semibold tabular-nums",
+                    achievement >= 90
+                      ? "text-status-on-track"
+                      : achievement >= 60
+                        ? "text-status-at-risk"
+                        : "text-status-behind"
+                  )}
+                >
+                  {Math.round(achievement)}%
+                </span>
+              </div>
+
+              <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 border-t border-border pt-3 text-xs">
+                <div>
+                  <p className="text-muted-foreground">Current / Target</p>
+                  <p className="font-mono tabular-nums text-foreground">
+                    {formatUnitValue(kpi.current, kpi.unit)} / {formatUnitValue(kpi.target, kpi.unit)}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-muted-foreground">Weight</p>
+                  <p className="font-mono tabular-nums text-foreground">{kpi.weight}%</p>
+                </div>
+              </div>
+
+              {renderActions && (
+                <div className="mt-3 flex justify-end gap-1 border-t border-border pt-3">
+                  {renderActions(kpi)}
+                </div>
+              )}
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
