@@ -1,15 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { resolveCycleId } from "@/lib/cycles";
 import { employeeUpdateSchema, zodIssues } from "@/lib/validation";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
-export async function GET(_request: NextRequest, { params }: RouteContext) {
+export async function GET(request: NextRequest, { params }: RouteContext) {
   const { id } = await params;
+  const cycleId = await resolveCycleId(request.nextUrl.searchParams.get("cycleId"));
   const employee = await prisma.employee.findUnique({
     where: { id },
-    include: { kpis: true },
+    include: { kpis: cycleId ? { where: { cycleId } } : true },
   });
 
   if (!employee) {

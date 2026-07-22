@@ -32,6 +32,10 @@ import type { Kpi } from "@/lib/types";
 
 const UNITS = ["RM", "%", "count"] as const;
 
+const CATEGORY_SELECT_ITEMS: Record<string, string> = { ...CATEGORY_LABEL };
+const STATUS_SELECT_ITEMS: Record<string, string> = { ...STATUS_LABEL };
+const UNIT_SELECT_ITEMS: Record<string, string> = { RM: "RM", "%": "%", count: "count" };
+
 interface FormState {
   title: string;
   description: string;
@@ -73,7 +77,7 @@ export function KpiFormDialog({
 
   const employeesQuery = useQuery({
     queryKey: ["employees"],
-    queryFn: getEmployees,
+    queryFn: () => getEmployees(),
     enabled: open,
   });
   const cyclesQuery = useQuery({ queryKey: ["cycles"], queryFn: getCycles, enabled: open });
@@ -173,12 +177,13 @@ export function KpiFormDialog({
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label htmlFor="kpi-employee">Employee</Label>
               <Select
                 value={form.employeeId}
                 onValueChange={(value) => setForm((f) => ({ ...f, employeeId: value ?? "" }))}
+                items={Object.fromEntries(employees.map((employee) => [employee.id, employee.name]))}
               >
                 <SelectTrigger id="kpi-employee" className="w-full" aria-invalid={Boolean(errors.employeeId)}>
                   <SelectValue placeholder="Select employee" />
@@ -199,6 +204,7 @@ export function KpiFormDialog({
               <Select
                 value={form.category}
                 onValueChange={(value) => setForm((f) => ({ ...f, category: value ?? f.category }))}
+                items={CATEGORY_SELECT_ITEMS}
               >
                 <SelectTrigger id="kpi-category" className="w-full">
                   <SelectValue placeholder="Category" />
@@ -214,7 +220,7 @@ export function KpiFormDialog({
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <div className="space-y-1.5">
               <Label htmlFor="kpi-current">Current</Label>
               <Input
@@ -241,7 +247,11 @@ export function KpiFormDialog({
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="kpi-unit">Unit</Label>
-              <Select value={form.unit} onValueChange={(value) => setForm((f) => ({ ...f, unit: value ?? f.unit }))}>
+              <Select
+                value={form.unit}
+                onValueChange={(value) => setForm((f) => ({ ...f, unit: value ?? f.unit }))}
+                items={UNIT_SELECT_ITEMS}
+              >
                 <SelectTrigger id="kpi-unit" className="w-full">
                   <SelectValue placeholder="Unit" />
                 </SelectTrigger>
@@ -256,7 +266,7 @@ export function KpiFormDialog({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label htmlFor="kpi-weight">Weight (%)</Label>
               <Input
@@ -276,6 +286,7 @@ export function KpiFormDialog({
               <Select
                 value={form.status}
                 onValueChange={(value) => setForm((f) => ({ ...f, status: value ?? f.status }))}
+                items={STATUS_SELECT_ITEMS}
               >
                 <SelectTrigger id="kpi-status" className="w-full">
                   <SelectValue placeholder="Status" />

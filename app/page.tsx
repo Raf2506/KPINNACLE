@@ -1,11 +1,13 @@
 "use client";
 
+import { Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { AlertTriangle, Gauge, ListChecks, TrendingUp, Users } from "lucide-react";
 import { getKpis, getMetrics } from "@/lib/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StatCard } from "@/components/stat-card";
+import { CycleSwitcher, useSelectedCycle } from "@/components/cycle-switcher";
 import { OverallScoreGauge } from "@/components/charts/overall-score-gauge";
 import { StatusDonut } from "@/components/charts/status-donut";
 import { CategoryBarChart } from "@/components/charts/category-bar-chart";
@@ -15,7 +17,20 @@ import { EmptyState } from "@/components/empty-state";
 import { ErrorState } from "@/components/error-state";
 
 export default function DashboardPage() {
-  const metricsQuery = useQuery({ queryKey: ["metrics"], queryFn: () => getMetrics() });
+  return (
+    <Suspense fallback={<DashboardSkeleton />}>
+      <DashboardPageContent />
+    </Suspense>
+  );
+}
+
+function DashboardPageContent() {
+  const { selectedCycleId } = useSelectedCycle();
+
+  const metricsQuery = useQuery({
+    queryKey: ["metrics", selectedCycleId],
+    queryFn: () => getMetrics(selectedCycleId),
+  });
   const cycleId = metricsQuery.data?.cycle?.id;
   const kpisQuery = useQuery({
     queryKey: ["kpis", { cycleId }],
@@ -54,11 +69,14 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-7">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">
-          {metrics.cycle.name} · {metrics.totalEmployees} employees · {metrics.totalKpis} KPIs
-        </p>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Dashboard</h1>
+          <p className="text-sm text-muted-foreground">
+            {metrics.cycle.name} · {metrics.totalEmployees} employees · {metrics.totalKpis} KPIs
+          </p>
+        </div>
+        <CycleSwitcher />
       </div>
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -132,7 +150,7 @@ export default function DashboardPage() {
       <Card>
         <CardHeader>
           <CardTitle>KPIs</CardTitle>
-          <CardDescription>Sort and filter every KPI in the active cycle</CardDescription>
+          <CardDescription>Sort and filter every KPI in this cycle</CardDescription>
         </CardHeader>
         <CardContent>
           {kpisQuery.isPending ? (

@@ -28,6 +28,9 @@ import type { Kpi } from "@/lib/types";
 
 type SortKey = "title" | "employee" | "category" | "status" | "achievement" | "weight";
 
+const CATEGORY_SELECT_ITEMS: Record<string, string> = { all: "All categories", ...CATEGORY_LABEL };
+const STATUS_SELECT_ITEMS: Record<string, string> = { all: "All statuses", ...STATUS_LABEL };
+
 export function KpiTable({
   kpis,
   showEmployeeColumn = true,
@@ -55,6 +58,11 @@ export function KpiTable({
     }
     return Array.from(map.entries()).sort((a, b) => a[1].localeCompare(b[1]));
   }, [kpis]);
+
+  const employeeSelectItems = useMemo(
+    () => ({ all: "All employees", ...Object.fromEntries(employeeOptions) }),
+    [employeeOptions]
+  );
 
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -154,8 +162,12 @@ export function KpiTable({
           />
         </div>
         {showEmployeeColumn && employeeOptions.length > 0 && (
-          <Select value={employeeFilter} onValueChange={(value) => setEmployeeFilter(value ?? "all")}>
-            <SelectTrigger className="sm:w-44" aria-label="Filter by employee">
+          <Select
+            value={employeeFilter}
+            onValueChange={(value) => setEmployeeFilter(value ?? "all")}
+            items={employeeSelectItems}
+          >
+            <SelectTrigger className="w-full sm:w-44" aria-label="Filter by employee">
               <SelectValue placeholder="Employee" />
             </SelectTrigger>
             <SelectContent>
@@ -168,8 +180,12 @@ export function KpiTable({
             </SelectContent>
           </Select>
         )}
-        <Select value={categoryFilter} onValueChange={(value) => setCategoryFilter(value ?? "all")}>
-          <SelectTrigger className="sm:w-40" aria-label="Filter by category">
+        <Select
+          value={categoryFilter}
+          onValueChange={(value) => setCategoryFilter(value ?? "all")}
+          items={CATEGORY_SELECT_ITEMS}
+        >
+          <SelectTrigger className="w-full sm:w-40" aria-label="Filter by category">
             <SelectValue placeholder="Category" />
           </SelectTrigger>
           <SelectContent>
@@ -181,8 +197,12 @@ export function KpiTable({
             ))}
           </SelectContent>
         </Select>
-        <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value ?? "all")}>
-          <SelectTrigger className="sm:w-40" aria-label="Filter by status">
+        <Select
+          value={statusFilter}
+          onValueChange={(value) => setStatusFilter(value ?? "all")}
+          items={STATUS_SELECT_ITEMS}
+        >
+          <SelectTrigger className="w-full sm:w-40" aria-label="Filter by status">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>

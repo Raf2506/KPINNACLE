@@ -43,8 +43,14 @@ export function getMetrics(cycleId?: string) {
   return request<MetricsResponse>(`/api/metrics${qs}`);
 }
 
-export function getEmployees() {
-  return request<EmployeeWithKpis[]>("/api/employees");
+export function getEmployees(cycleId?: string) {
+  const qs = cycleId ? `?cycleId=${encodeURIComponent(cycleId)}` : "";
+  return request<EmployeeWithKpis[]>(`/api/employees${qs}`);
+}
+
+export function getEmployee(id: string, cycleId?: string) {
+  const qs = cycleId ? `?cycleId=${encodeURIComponent(cycleId)}` : "";
+  return request<EmployeeWithKpis>(`/api/employees/${id}${qs}`);
 }
 
 export function createEmployee(data: EmployeeInput) {

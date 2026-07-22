@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { resolveCycleId } from "@/lib/cycles";
 import {
   atRiskCount,
   categoryBreakdown,
@@ -9,14 +10,8 @@ import {
 } from "@/lib/metrics";
 
 export async function GET(request: NextRequest) {
-  const cycleIdParam = request.nextUrl.searchParams.get("cycleId");
-
-  const cycle = cycleIdParam
-    ? await prisma.reviewCycle.findUnique({ where: { id: cycleIdParam } })
-    : await prisma.reviewCycle.findFirst({
-        where: { isActive: true },
-        orderBy: { startDate: "desc" },
-      });
+  const cycleId = await resolveCycleId(request.nextUrl.searchParams.get("cycleId"));
+  const cycle = cycleId ? await prisma.reviewCycle.findUnique({ where: { id: cycleId } }) : null;
 
   if (!cycle) {
     return NextResponse.json({

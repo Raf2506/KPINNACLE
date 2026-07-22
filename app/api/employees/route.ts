@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { resolveCycleId } from "@/lib/cycles";
 import { employeeInputSchema, zodIssues } from "@/lib/validation";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const cycleId = await resolveCycleId(request.nextUrl.searchParams.get("cycleId"));
+
   const employees = await prisma.employee.findMany({
     orderBy: { name: "asc" },
-    include: { kpis: true },
+    include: { kpis: cycleId ? { where: { cycleId } } : true },
   });
   return NextResponse.json(employees);
 }

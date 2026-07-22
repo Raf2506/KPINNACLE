@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -11,14 +12,27 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { AvatarInitials } from "@/components/avatar-initials";
+import { CycleSwitcher, useSelectedCycle } from "@/components/cycle-switcher";
 import { EmployeeFormDialog } from "@/components/employee-form-dialog";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { ErrorState } from "@/components/error-state";
 import { cn } from "@/lib/utils";
 
 export default function EmployeesPage() {
+  return (
+    <Suspense fallback={<EmployeesSkeleton />}>
+      <EmployeesPageContent />
+    </Suspense>
+  );
+}
+
+function EmployeesPageContent() {
   const queryClient = useQueryClient();
-  const employeesQuery = useQuery({ queryKey: ["employees"], queryFn: getEmployees });
+  const { selectedCycleId } = useSelectedCycle();
+  const employeesQuery = useQuery({
+    queryKey: ["employees", selectedCycleId],
+    queryFn: () => getEmployees(selectedCycleId),
+  });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteEmployee(id),
@@ -35,21 +49,24 @@ export default function EmployeesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">Employees</h1>
           <p className="text-sm text-muted-foreground">
             Manage employees and review their KPI weight totals.
           </p>
         </div>
-        <EmployeeFormDialog
-          trigger={
-            <Button className="cursor-pointer gap-1.5 rounded-full px-4">
-              <Plus className="h-4 w-4" />
-              Add employee
-            </Button>
-          }
-        />
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <CycleSwitcher />
+          <EmployeeFormDialog
+            trigger={
+              <Button className="cursor-pointer gap-1.5 rounded-full px-4">
+                <Plus className="h-4 w-4" />
+                Add employee
+              </Button>
+            }
+          />
+        </div>
       </div>
 
       {employeesQuery.isPending ? (
@@ -86,20 +103,25 @@ export default function EmployeesPage() {
             const score = overallScore(employee.kpis);
             const isDeletingThis =
               deleteMutation.isPending && deleteMutation.variables === employee.id;
+            const detailHref = selectedCycleId
+              ? `/employees/${employee.id}?cycle=${selectedCycleId}`
+              : `/employees/${employee.id}`;
 
             return (
               <Card key={employee.id} className="flex flex-col">
                 <CardHeader>
                   <div className="flex items-start justify-between gap-2">
-                    <div className="flex min-w-0 items-center gap-3">
+                    <Link href={detailHref} className="flex min-w-0 items-center gap-3 group">
                       <AvatarInitials name={employee.name} />
                       <div className="min-w-0">
-                        <CardTitle className="truncate">{employee.name}</CardTitle>
+                        <CardTitle className="truncate group-hover:underline">
+                          {employee.name}
+                        </CardTitle>
                         <CardDescription className="truncate">
                           {employee.role} · {employee.department}
                         </CardDescription>
                       </div>
-                    </div>
+                    </Link>
                     <div className="flex shrink-0 gap-1">
                       <EmployeeFormDialog
                         employee={employee}
@@ -126,7 +148,7 @@ export default function EmployeesPage() {
                           </Button>
                         }
                         title={`Delete ${employee.name}?`}
-                        description={`This permanently deletes ${employee.name} and all ${employee.kpis.length} of their KPIs. This can't be undone.`}
+                        description={`This permanently deletes ${employee.name} and all of their KPIs across every cycle. This can't be undone.`}
                         onConfirm={() => deleteMutation.mutateAsync(employee.id)}
                         pending={isDeletingThis}
                       />
@@ -166,18 +188,36 @@ export default function EmployeesPage() {
                       Weights should sum to 100%
                     </Badge>
                   )}
-                  <Link
-                    href={`/kpis?employee=${employee.id}`}
-                    className="mt-auto pt-1 text-sm font-medium text-primary hover:underline"
-                  >
-                    View KPIs →
-                  </Link>
+                  <div className="mt-auto flex items-center justify-between pt-1 text-sm font-medium">
+                    <Link href={detailHref} className="text-primary hover:underline">
+                      View profile →
+                    </Link>
+                    <Link
+                      href={`/kpis?employee=${employee.id}`}
+                      className="text-muted-foreground hover:text-foreground hover:underline"
+                    >
+                      View KPIs
+                    </Link>
+                  </div>
                 </CardContent>
               </Card>
             );
           })}
         </div>
       )}
+    </div>
+  );
+}
+
+function EmployeesSkeleton() {
+  return (
+    <div className="space-y-6">
+      <Skeleton className="h-8 w-48" />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <Skeleton key={i} className="h-52" />
+        ))}
+      </div>
     </div>
   );
 }
