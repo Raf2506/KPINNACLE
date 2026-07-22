@@ -30,7 +30,7 @@ export function WelcomeBanner({ summary, dateLabel }: { summary: string; dateLab
             {text}
           </div>
           <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-            Welcome to your KPI dashboard
+            Welcome to KPINNACLE
           </h1>
           <p className="mt-2 text-sm text-primary-foreground/85 sm:text-base">{summary}</p>
           <p className="mt-1 text-xs text-primary-foreground/60">{dateLabel}</p>

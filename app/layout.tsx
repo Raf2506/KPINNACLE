@@ -15,7 +15,7 @@ const fontMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "KPI Analyzer",
+  title: "KPINNACLE — KPI Analyzer",
   description: "Employee KPI performance dashboard",
 };
 

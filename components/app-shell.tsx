@@ -52,7 +52,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <Link
             href="/"
             className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-sidebar-accent text-sidebar-accent-foreground"
-            aria-label="KPI Analyzer home"
+            aria-label="KPINNACLE home"
           >
             <Gauge className="h-5 w-5" strokeWidth={2.25} />
           </Link>
@@ -111,8 +111,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             >
               <Menu className="h-5 w-5" />
             </button>
-            <span className="font-heading text-lg font-semibold tracking-tight text-foreground">
-              KPI Analyzer
+            <span className="flex min-w-0 items-baseline gap-1.5 truncate">
+              <span className="font-heading text-lg font-semibold tracking-tight text-foreground">
+                KPINNACLE
+              </span>
+              <span className="hidden truncate text-sm text-muted-foreground sm:inline">
+                — KPI Analyzer
+              </span>
             </span>
           </div>
           <ThemeToggle />
