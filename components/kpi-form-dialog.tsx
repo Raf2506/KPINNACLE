@@ -109,6 +109,7 @@ export function KpiFormDialog({
         status: form.status as Kpi["status"],
         employeeId: form.employeeId,
         cycleId: resolvedCycleId ?? "",
+        aiGenerated: kpi?.aiGenerated ?? false,
       };
       return isEdit && kpi ? updateKpi(kpi.id, payload) : createKpi(payload);
     },

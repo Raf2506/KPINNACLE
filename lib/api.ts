@@ -8,7 +8,7 @@ import type {
   ReviewCycle,
   Status,
 } from "@/lib/types";
-import type { RiskDetectionResult } from "@/lib/ai/schemas";
+import type { KpiSuggestion, RiskDetectionResult } from "@/lib/ai/schemas";
 
 export class ApiError extends Error {
   status: number;
@@ -123,5 +123,12 @@ export function generateRiskDetection(cycleId?: string) {
   return request<AiResult<RiskDetectionResult>>("/api/ai/risk", {
     method: "POST",
     body: JSON.stringify({ cycleId }),
+  });
+}
+
+export function generateKpiSuggestions(employeeId: string, context: string) {
+  return request<{ suggestions: KpiSuggestion[] }>("/api/ai/generate-kpis", {
+    method: "POST",
+    body: JSON.stringify({ employeeId, context }),
   });
 }

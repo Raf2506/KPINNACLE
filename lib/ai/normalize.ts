@@ -26,3 +26,13 @@ export function safeString(fallback = "") {
 export function safeArray<T extends z.ZodTypeAny>(item: T) {
   return z.array(item).catch([]);
 }
+
+/** Rescales weights so they sum to exactly 100, in case the model drifts. */
+export function renormalizeWeights<T extends { weight: number }>(items: T[]): T[] {
+  const total = items.reduce((sum, item) => sum + item.weight, 0);
+  if (total <= 0) {
+    const even = items.length > 0 ? 100 / items.length : 0;
+    return items.map((item) => ({ ...item, weight: even }));
+  }
+  return items.map((item) => ({ ...item, weight: (item.weight / total) * 100 }));
+}

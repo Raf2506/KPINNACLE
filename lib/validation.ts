@@ -23,6 +23,8 @@ export const kpiInputSchema = z.object({
   status: statusSchema,
   employeeId: z.string().min(1, "Employee is required"),
   cycleId: z.string().min(1, "Review cycle is required"),
+  /** Set by the AI KPI Generator's "Apply selected" flow. */
+  aiGenerated: z.boolean().optional().default(false),
 });
 
 export const kpiUpdateSchema = kpiInputSchema.partial();

@@ -4,13 +4,14 @@ import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ListChecks, Pencil, Plus, Trash2 } from "lucide-react";
+import { ListChecks, Pencil, Plus, Sparkles, Trash2 } from "lucide-react";
 import { ApiError, deleteKpi, getKpis } from "@/lib/api";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { KpiTable } from "@/components/kpi-table";
 import { KpiFormDialog } from "@/components/kpi-form-dialog";
+import { KpiGeneratorDialog } from "@/components/kpi-generator-dialog";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { EmptyState } from "@/components/empty-state";
 import { ErrorState } from "@/components/error-state";
@@ -53,15 +54,26 @@ function KpisPageContent() {
             Manage every KPI across employees, categories, and statuses.
           </p>
         </div>
-        <KpiFormDialog
-          defaultEmployeeId={defaultEmployeeId}
-          trigger={
-            <Button className="cursor-pointer gap-1.5 rounded-full px-4">
-              <Plus className="h-4 w-4" />
-              Add KPI
-            </Button>
-          }
-        />
+        <div className="flex flex-wrap gap-2">
+          <KpiGeneratorDialog
+            defaultEmployeeId={defaultEmployeeId}
+            trigger={
+              <Button variant="outline" className="cursor-pointer gap-1.5 rounded-full px-4">
+                <Sparkles className="h-4 w-4" />
+                Generate with AI
+              </Button>
+            }
+          />
+          <KpiFormDialog
+            defaultEmployeeId={defaultEmployeeId}
+            trigger={
+              <Button className="cursor-pointer gap-1.5 rounded-full px-4">
+                <Plus className="h-4 w-4" />
+                Add KPI
+              </Button>
+            }
+          />
+        </div>
       </div>
 
       <Card>
