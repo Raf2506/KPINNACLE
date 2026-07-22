@@ -287,6 +287,142 @@ const Q3_KPIS: Record<string, KpiSeed[]> = {
   ],
 };
 
+/** Oldest closed cycle — final, resolved results (no NOT_STARTED; the quarter is over). */
+const Q1_KPIS: Record<string, KpiSeed[]> = {
+  "Aisha Rahman": [
+    {
+      title: "Q1 Sales Revenue",
+      description: "Final closed revenue for Q1 against the assigned target.",
+      category: Category.SALES,
+      weight: 60,
+      target: 130000,
+      current: 121000,
+      unit: "RM",
+      status: Status.BEHIND,
+    },
+    {
+      title: "New Client Acquisitions",
+      description: "Number of new paying clients signed in Q1.",
+      category: Category.SALES,
+      weight: 40,
+      target: 8,
+      current: 7,
+      unit: "count",
+      status: Status.AT_RISK,
+    },
+  ],
+  "Daniel Teo": [
+    {
+      title: "Q1 Sales Revenue",
+      description: "Final closed revenue for Q1 against the assigned target.",
+      category: Category.SALES,
+      weight: 60,
+      target: 100000,
+      current: 94000,
+      unit: "RM",
+      status: Status.AT_RISK,
+    },
+    {
+      title: "Client Retention Rate",
+      description: "Percentage of existing clients retained through Q1.",
+      category: Category.SALES,
+      weight: 40,
+      target: 88,
+      current: 85,
+      unit: "%",
+      status: Status.AT_RISK,
+    },
+  ],
+  "Nurul Huda": [
+    {
+      title: "On-Time Delivery Rate",
+      description: "Percentage of orders fulfilled within the promised window in Q1.",
+      category: Category.OPERATIONS,
+      weight: 50,
+      target: 92,
+      current: 89,
+      unit: "%",
+      status: Status.AT_RISK,
+    },
+    {
+      title: "Team Training Completion",
+      description: "Percentage of the team that completed mandatory SOP training in Q1.",
+      category: Category.OPERATIONS,
+      weight: 50,
+      target: 100,
+      current: 100,
+      unit: "%",
+      status: Status.ON_TRACK,
+    },
+  ],
+  "Marcus Lim": [
+    {
+      title: "Inventory Accuracy Rate",
+      description: "Cycle-count accuracy across managed warehouse locations in Q1.",
+      category: Category.OPERATIONS,
+      weight: 60,
+      target: 97,
+      current: 95,
+      unit: "%",
+      status: Status.ON_TRACK,
+    },
+    {
+      title: "Process Documentation Coverage",
+      description: "Percentage of SOPs with up-to-date written documentation in Q1.",
+      category: Category.OPERATIONS,
+      weight: 40,
+      target: 80,
+      current: 55,
+      unit: "%",
+      status: Status.BEHIND,
+    },
+  ],
+  "Farah Aziz": [
+    {
+      title: "Policy Training Completion",
+      description: "Percentage of staff who completed annual compliance training in Q1.",
+      category: Category.COMPLIANCE,
+      weight: 50,
+      target: 100,
+      current: 96,
+      unit: "%",
+      status: Status.ON_TRACK,
+    },
+    {
+      title: "Regulatory Filing Timeliness",
+      description: "Percentage of regulatory filings submitted before deadline in Q1.",
+      category: Category.COMPLIANCE,
+      weight: 50,
+      target: 100,
+      current: 88,
+      unit: "%",
+      status: Status.AT_RISK,
+    },
+  ],
+  "Kevin Wong": [
+    {
+      title: "Sprint Velocity Achievement",
+      description: "Story points delivered vs. sprint commitment, averaged over Q1.",
+      category: Category.DEVELOPMENT,
+      weight: 50,
+      target: 100,
+      current: 82,
+      unit: "%",
+      status: Status.AT_RISK,
+    },
+    {
+      title: "Code Review Turnaround",
+      description: "Percentage of PRs reviewed within the 1-business-day SLA in Q1.",
+      category: Category.DEVELOPMENT,
+      weight: 50,
+      target: 85,
+      current: 80,
+      unit: "%",
+      status: Status.AT_RISK,
+    },
+  ],
+};
+
 /** Closed prior cycle — final, resolved results (no NOT_STARTED; the quarter is over). */
 const Q2_KPIS: Record<string, KpiSeed[]> = {
   "Aisha Rahman": [
@@ -430,6 +566,15 @@ async function main() {
   await prisma.employee.deleteMany();
   await prisma.reviewCycle.deleteMany();
 
+  const q1Cycle = await prisma.reviewCycle.create({
+    data: {
+      name: "Q1 2026 (Jan–Mar)",
+      startDate: new Date("2026-01-01"),
+      endDate: new Date("2026-03-31"),
+      isActive: false,
+    },
+  });
+
   const q2Cycle = await prisma.reviewCycle.create({
     data: {
       name: "Q2 2026 (Apr–Jun)",
@@ -452,6 +597,14 @@ async function main() {
     const employee = await prisma.employee.create({ data: profile });
 
     await prisma.kpi.createMany({
+      data: Q1_KPIS[profile.name].map((kpi) => ({
+        ...kpi,
+        employeeId: employee.id,
+        cycleId: q1Cycle.id,
+      })),
+    });
+
+    await prisma.kpi.createMany({
       data: Q2_KPIS[profile.name].map((kpi) => ({
         ...kpi,
         employeeId: employee.id,
@@ -471,7 +624,7 @@ async function main() {
   const employeeCount = await prisma.employee.count();
   const kpiCount = await prisma.kpi.count();
   console.log(
-    `Seeded ${employeeCount} employees and ${kpiCount} KPIs across cycles "${q2Cycle.name}" and "${q3Cycle.name}".`
+    `Seeded ${employeeCount} employees and ${kpiCount} KPIs across cycles "${q1Cycle.name}", "${q2Cycle.name}", and "${q3Cycle.name}".`
   );
 }
 
