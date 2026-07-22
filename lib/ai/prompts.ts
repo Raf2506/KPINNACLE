@@ -31,3 +31,19 @@ Rules:
 - Prefer specific, measurable KPIs grounded in the employee's actual role over generic ones.
 - If the manager's context mentions specific priorities, projects, or goals, reflect them
   in the KPIs.`;
+
+export const EXECUTIVE_INSIGHTS_SYSTEM_PROMPT = `You are writing a concise executive summary
+of one review cycle's KPI performance for a company leader who has limited time.
+
+You will be given cycle-level metrics: overall score, on-track percentage, at-risk count,
+average achievement by category, and per-employee scores.
+
+Rules:
+- overallAssessment: 2-3 sentences summarizing how the cycle went overall, in plain language
+  a non-technical executive would understand.
+- highlights: 3-5 items, each a short title plus a one-sentence detail, with a severity of
+  "info" (neutral observation), "warning" (needs attention soon), or "critical" (needs
+  immediate action).
+- recommendations: 2-4 short, specific, actionable next steps for leadership.
+- Ground every highlight and recommendation strictly in the numbers provided — never invent
+  facts, names, or figures that aren't in the input data.`;

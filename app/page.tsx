@@ -18,6 +18,7 @@ import { EmployeeScoreBars } from "@/components/charts/employee-score-bars";
 import { NeedsAttentionList } from "@/components/needs-attention-list";
 import { HighlightsPanel } from "@/components/highlights-panel";
 import { RiskDetectionPanel } from "@/components/risk-detection-panel";
+import { ExecutiveInsightsPanel } from "@/components/executive-insights-panel";
 import { AiBadge } from "@/components/ai-badge";
 import { KpiTable } from "@/components/kpi-table";
 import { EmptyState } from "@/components/empty-state";
@@ -210,18 +211,32 @@ function DashboardPageContent() {
         </Card>
       </div>
 
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <CardTitle>Risk Detection</CardTitle>
-            <AiBadge />
-          </div>
-          <CardDescription>Which KPIs are most likely to slip this cycle, and why</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <RiskDetectionPanel cycleId={metrics.cycle.id} />
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <CardTitle>Risk Detection</CardTitle>
+              <AiBadge />
+            </div>
+            <CardDescription>Which KPIs are most likely to slip this cycle, and why</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <RiskDetectionPanel cycleId={metrics.cycle.id} />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <CardTitle>Executive Summary</CardTitle>
+              <AiBadge />
+            </div>
+            <CardDescription>Plain-language overview and recommendations</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ExecutiveInsightsPanel cycleId={metrics.cycle.id} />
+          </CardContent>
+        </Card>
+      </div>
 
       <Card>
         <CardHeader>

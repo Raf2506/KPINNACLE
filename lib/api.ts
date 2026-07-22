@@ -8,7 +8,7 @@ import type {
   ReviewCycle,
   Status,
 } from "@/lib/types";
-import type { KpiSuggestion, RiskDetectionResult } from "@/lib/ai/schemas";
+import type { ExecutiveInsightsResult, KpiSuggestion, RiskDetectionResult } from "@/lib/ai/schemas";
 
 export class ApiError extends Error {
   status: number;
@@ -130,5 +130,17 @@ export function generateKpiSuggestions(employeeId: string, context: string) {
   return request<{ suggestions: KpiSuggestion[] }>("/api/ai/generate-kpis", {
     method: "POST",
     body: JSON.stringify({ employeeId, context }),
+  });
+}
+
+export function getCachedExecutiveInsights(cycleId?: string) {
+  const qs = cycleId ? `?cycleId=${encodeURIComponent(cycleId)}` : "";
+  return request<CachedAiResult<ExecutiveInsightsResult>>(`/api/ai/insights${qs}`);
+}
+
+export function generateExecutiveInsights(cycleId?: string) {
+  return request<AiResult<ExecutiveInsightsResult>>("/api/ai/insights", {
+    method: "POST",
+    body: JSON.stringify({ cycleId }),
   });
 }

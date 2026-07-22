@@ -35,3 +35,19 @@ export const kpiGeneratorResultSchema = z.object({
   suggestions: safeArray(kpiSuggestionSchema),
 });
 export type KpiGeneratorResult = z.infer<typeof kpiGeneratorResultSchema>;
+
+export const insightSeveritySchema = z.enum(["info", "warning", "critical"]).catch("info");
+export type InsightSeverity = z.infer<typeof insightSeveritySchema>;
+
+export const executiveHighlightSchema = z.object({
+  title: safeString(),
+  detail: safeString(),
+  severity: insightSeveritySchema,
+});
+
+export const executiveInsightsSchema = z.object({
+  overallAssessment: safeString(),
+  highlights: safeArray(executiveHighlightSchema),
+  recommendations: safeArray(safeString()),
+});
+export type ExecutiveInsightsResult = z.infer<typeof executiveInsightsSchema>;
