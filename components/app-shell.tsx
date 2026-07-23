@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, ListChecks, Gauge, Menu, X } from "lucide-react";
+import { LayoutDashboard, Users, ListChecks, Gauge, Menu, X, BookOpen } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 
@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/employees", label: "Employees", icon: Users },
   { href: "/kpis", label: "KPIs", icon: ListChecks },
+  { href: "/guide", label: "Guide", icon: BookOpen },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
