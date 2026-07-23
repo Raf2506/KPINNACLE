@@ -1,11 +1,16 @@
-import Anthropic from "@anthropic-ai/sdk";
+import { GoogleGenAI } from "@google/genai";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import type { z } from "zod";
 
 /**
- * Provider-agnostic LLM plumbing. Currently implemented for Anthropic only
- * (LLM_PROVIDER="anthropic"); the callLLM signature is the single seam a
- * second provider would plug into.
+ * Provider-agnostic LLM plumbing. Currently implemented for Google Gemini
+ * (LLM_PROVIDER="gemini"); callLLM's signature is the seam a different
+ * provider would plug into.
+ *
+ * We ask Gemini for raw JSON (responseMimeType) rather than a provider-native
+ * structured schema, then run the result through the caller's Zod schema.
+ * That's the same defensive-normalization pass every LLM response already
+ * has to pass per project convention, so it doubles as our schema enforcement.
  */
 
 export type LlmErrorCode = "MISSING_KEY" | "RATE_LIMITED" | "MODEL_ERROR" | "PARSE_ERROR";
@@ -14,7 +19,7 @@ export type LlmResult<T> =
   | { ok: true; data: T }
   | { ok: false; error: LlmErrorCode; message: string };
 
-const MODEL = "claude-sonnet-5";
+const MODEL = "gemini-flash-latest";
 
 export async function callLLM<T>(opts: {
   system: string;
@@ -31,46 +36,49 @@ export async function callLLM<T>(opts: {
     };
   }
 
-  const client = new Anthropic({ apiKey });
+  const client = new GoogleGenAI({ apiKey });
   const jsonSchema = zodToJsonSchema(opts.schema, "response").definitions?.response ?? {};
+  const systemInstruction = `${opts.system}\n\nRespond with ONLY a single valid JSON object matching this schema — no markdown fences, no commentary before or after:\n${JSON.stringify(jsonSchema)}`;
 
-  let message: Anthropic.Message;
+  let text: string | undefined;
   try {
-    message = await client.messages.create({
+    const response = await client.models.generateContent({
       model: MODEL,
-      max_tokens: opts.maxTokens ?? 1536,
-      system: opts.system,
-      messages: [{ role: "user", content: opts.user }],
-      tools: [
-        {
-          name: "submit_response",
-          description: "Submit the structured response for this request.",
-          input_schema: jsonSchema as Anthropic.Tool.InputSchema,
-        },
-      ],
-      tool_choice: { type: "tool", name: "submit_response" },
+      contents: opts.user,
+      config: {
+        systemInstruction,
+        responseMimeType: "application/json",
+        // Gemini's flash models spend part of this budget on internal "thinking"
+        // tokens before writing the answer, so this needs real headroom above
+        // the visible JSON output size or responses truncate mid-object.
+        maxOutputTokens: opts.maxTokens ?? 8192,
+      },
     });
+    text = response.text;
   } catch (error) {
-    if (error instanceof Anthropic.AuthenticationError) {
+    const status = (error as { status?: number })?.status;
+    if (status === 401 || status === 403) {
       return { ok: false, error: "MISSING_KEY", message: "The configured LLM_API_KEY was rejected." };
     }
-    if (error instanceof Anthropic.RateLimitError) {
+    if (status === 429) {
       return { ok: false, error: "RATE_LIMITED", message: "Rate limited by the model provider. Try again shortly." };
     }
-    if (error instanceof Anthropic.APIError) {
-      return { ok: false, error: "MODEL_ERROR", message: error.message };
-    }
-    return { ok: false, error: "MODEL_ERROR", message: "Unexpected error calling the model." };
+    const message = error instanceof Error ? error.message : "Unexpected error calling the model.";
+    return { ok: false, error: "MODEL_ERROR", message };
   }
 
-  const toolUse = message.content.find(
-    (block): block is Anthropic.ToolUseBlock => block.type === "tool_use"
-  );
-  if (!toolUse) {
-    return { ok: false, error: "PARSE_ERROR", message: "The model did not return structured output." };
+  if (!text) {
+    return { ok: false, error: "PARSE_ERROR", message: "The model did not return any output." };
   }
 
-  const parsed = opts.schema.safeParse(toolUse.input);
+  let json: unknown;
+  try {
+    json = JSON.parse(text);
+  } catch {
+    return { ok: false, error: "PARSE_ERROR", message: "The model's response wasn't valid JSON." };
+  }
+
+  const parsed = opts.schema.safeParse(json);
   if (!parsed.success) {
     return { ok: false, error: "PARSE_ERROR", message: "The model's response didn't match the expected shape." };
   }
