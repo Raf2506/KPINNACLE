@@ -26,6 +26,8 @@ export async function callLLM<T>(opts: {
   user: string;
   schema: z.ZodType<T, z.ZodTypeDef, unknown>;
   maxTokens?: number;
+  /** Optional file (base64 data + MIME type) attached alongside the user prompt, for multimodal input like invoice images/PDFs. */
+  file?: { data: string; mimeType: string };
 }): Promise<LlmResult<T>> {
   const apiKey = process.env.LLM_API_KEY;
   if (!apiKey) {
@@ -40,11 +42,15 @@ export async function callLLM<T>(opts: {
   const jsonSchema = zodToJsonSchema(opts.schema, "response").definitions?.response ?? {};
   const systemInstruction = `${opts.system}\n\nRespond with ONLY a single valid JSON object matching this schema — no markdown fences, no commentary before or after:\n${JSON.stringify(jsonSchema)}`;
 
+  const contents = opts.file
+    ? [{ inlineData: { data: opts.file.data, mimeType: opts.file.mimeType } }, { text: opts.user }]
+    : opts.user;
+
   let text: string | undefined;
   try {
     const response = await client.models.generateContent({
       model: MODEL,
-      contents: opts.user,
+      contents,
       config: {
         systemInstruction,
         responseMimeType: "application/json",

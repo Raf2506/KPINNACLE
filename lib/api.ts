@@ -8,7 +8,12 @@ import type {
   ReviewCycle,
   Status,
 } from "@/lib/types";
-import type { ExecutiveInsightsResult, KpiSuggestion, RiskDetectionResult } from "@/lib/ai/schemas";
+import type {
+  ExecutiveInsightsResult,
+  InvoiceExtractionResult,
+  KpiSuggestion,
+  RiskDetectionResult,
+} from "@/lib/ai/schemas";
 
 export class ApiError extends Error {
   status: number;
@@ -142,5 +147,12 @@ export function generateExecutiveInsights(cycleId?: string) {
   return request<AiResult<ExecutiveInsightsResult>>("/api/ai/insights", {
     method: "POST",
     body: JSON.stringify({ cycleId }),
+  });
+}
+
+export function extractInvoice(data: string, mimeType: string) {
+  return request<InvoiceExtractionResult>("/api/ai/extract-invoice", {
+    method: "POST",
+    body: JSON.stringify({ data, mimeType }),
   });
 }

@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ApiError, createKpi, getCycles, getEmployees, updateKpi } from "@/lib/api";
+import { InvoiceExtractButton } from "@/components/invoice-extract-button";
 import { CATEGORIES, STATUSES } from "@/lib/metrics";
 import { CATEGORY_LABEL } from "@/components/category-badge";
 import { STATUS_LABEL } from "@/components/status-badge";
@@ -305,6 +306,10 @@ export function KpiFormDialog({
               </Select>
             </div>
           </div>
+
+          <InvoiceExtractButton
+            onExtracted={(amount) => setForm((f) => ({ ...f, current: String(amount) }))}
+          />
 
           <div className="space-y-1.5">
             <Label htmlFor="kpi-notes">Review notes (optional)</Label>

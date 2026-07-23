@@ -51,3 +51,12 @@ export const executiveInsightsSchema = z.object({
   recommendations: safeArray(safeString()),
 });
 export type ExecutiveInsightsResult = z.infer<typeof executiveInsightsSchema>;
+
+export const invoiceExtractionSchema = z.object({
+  amount: clampedNumber(0, 100_000_000, 0),
+  currency: safeString("RM"),
+  vendorOrClient: safeString(),
+  invoiceDate: safeString(),
+  summary: safeString(),
+});
+export type InvoiceExtractionResult = z.infer<typeof invoiceExtractionSchema>;

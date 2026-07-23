@@ -47,3 +47,21 @@ Rules:
 - recommendations: 2-4 short, specific, actionable next steps for leadership.
 - Ground every highlight and recommendation strictly in the numbers provided — never invent
   facts, names, or figures that aren't in the input data.`;
+
+export const INVOICE_EXTRACTION_SYSTEM_PROMPT = `You are extracting the total amount from an
+invoice image or PDF, to help a manager quickly fill in a KPI's current progress value
+instead of typing it in from paperwork by hand.
+
+Rules:
+- amount: the invoice's TOTAL amount due or paid, as a plain positive number with no currency
+  symbols, commas, or letters. If you cannot confidently identify a clear total amount on the
+  document, set this to 0 — never guess or invent a number that isn't actually printed on it.
+- currency: the currency code or symbol shown on the invoice (e.g. "RM", "USD", "$"). Default
+  to "RM" if it isn't clear.
+- vendorOrClient: the vendor or client name shown on the invoice, if visible. Empty string if
+  not visible.
+- invoiceDate: the invoice date exactly as shown, in any readable format. Empty string if not
+  visible.
+- summary: one short sentence describing what you found, or — if amount is 0 — a short
+  sentence explaining why extraction failed (e.g. "The image is too blurry to read a total"
+  or "This doesn't look like an invoice").`;
