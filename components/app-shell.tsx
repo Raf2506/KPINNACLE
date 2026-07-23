@@ -32,7 +32,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-dvh flex-col bg-background">
-      <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-4 border-b border-border bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:px-10">
+      <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-4 border-b border-border bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:px-10 print:hidden">
         <button
           type="button"
           onClick={() => setDrawerOpen(true)}
@@ -95,7 +95,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-64 shrink-0 flex-col gap-1 bg-sidebar px-4 py-5 text-sidebar-foreground transition-transform duration-200 ease-out sm:hidden",
+          "fixed inset-y-0 left-0 z-50 flex w-64 shrink-0 flex-col gap-1 bg-sidebar px-4 py-5 text-sidebar-foreground transition-transform duration-200 ease-out sm:hidden print:hidden",
           drawerOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >

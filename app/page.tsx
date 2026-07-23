@@ -1,8 +1,10 @@
 "use client";
 
 import { Suspense, useMemo } from "react";
+import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { AlertTriangle, Gauge, ListChecks, TrendingUp, Users } from "lucide-react";
+import { AlertTriangle, FileText, Gauge, ListChecks, TrendingUp, Users } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { getKpis, getMetrics } from "@/lib/api";
 import { buildHighlights } from "@/lib/insights";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -111,7 +113,19 @@ function DashboardPageContent() {
             {metrics.cycle.name} · {metrics.totalEmployees} employees · {metrics.totalKpis} KPIs
           </p>
         </div>
-        <CycleSwitcher />
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="cursor-pointer gap-1.5"
+            render={<Link href={`/report?cycle=${metrics.cycle.id}`} />}
+            nativeButton={false}
+          >
+            <FileText className="h-3.5 w-3.5" aria-hidden="true" />
+            Print report
+          </Button>
+          <CycleSwitcher />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
