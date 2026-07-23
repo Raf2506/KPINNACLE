@@ -46,6 +46,7 @@ interface FormState {
   unit: string;
   status: string;
   employeeId: string;
+  notes: string;
 }
 
 function toFormState(kpi: Kpi | undefined, defaultEmployeeId?: string): FormState {
@@ -59,6 +60,7 @@ function toFormState(kpi: Kpi | undefined, defaultEmployeeId?: string): FormStat
     unit: kpi?.unit ?? "%",
     status: kpi?.status ?? "NOT_STARTED",
     employeeId: kpi?.employeeId ?? defaultEmployeeId ?? "",
+    notes: kpi?.notes ?? "",
   };
 }
 
@@ -110,6 +112,7 @@ export function KpiFormDialog({
         employeeId: form.employeeId,
         cycleId: resolvedCycleId ?? "",
         aiGenerated: kpi?.aiGenerated ?? false,
+        notes: form.notes,
       };
       return isEdit && kpi ? updateKpi(kpi.id, payload) : createKpi(payload);
     },
@@ -301,6 +304,17 @@ export function KpiFormDialog({
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="kpi-notes">Review notes (optional)</Label>
+            <Textarea
+              id="kpi-notes"
+              value={form.notes}
+              onChange={(event) => setForm((f) => ({ ...f, notes: event.target.value }))}
+              placeholder="e.g. Discussed with employee on 8/15, improvement plan agreed."
+              rows={2}
+            />
           </div>
 
           {noActiveCycle && (

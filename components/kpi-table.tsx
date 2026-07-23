@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ArrowDown, ArrowUp, ArrowUpDown, Download, Search } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, Download, Search, StickyNote } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   Table,
   TableBody,
@@ -334,6 +335,21 @@ export function KpiTable({
                     <div className="flex items-center gap-2">
                       <span className="truncate font-medium text-foreground">{kpi.title}</span>
                       {kpi.aiGenerated && <AiBadge />}
+                      {kpi.notes && (
+                        <Tooltip>
+                          <TooltipTrigger
+                            render={
+                              <span
+                                className="inline-flex shrink-0 items-center text-muted-foreground"
+                                aria-label="Has review notes"
+                              />
+                            }
+                          >
+                            <StickyNote className="h-3.5 w-3.5" aria-hidden="true" />
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-64">{kpi.notes}</TooltipContent>
+                        </Tooltip>
+                      )}
                     </div>
                   </TableCell>
                   {showEmployeeColumn && (
@@ -421,6 +437,13 @@ export function KpiTable({
                   <p className="font-mono tabular-nums text-foreground">{kpi.weight}%</p>
                 </div>
               </div>
+
+              {kpi.notes && (
+                <div className="mt-3 flex items-start gap-1.5 border-t border-border pt-3 text-xs">
+                  <StickyNote className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
+                  <p className="text-muted-foreground">{kpi.notes}</p>
+                </div>
+              )}
 
               {renderActions && (
                 <div className="mt-3 flex justify-end gap-1 border-t border-border pt-3">

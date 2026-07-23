@@ -70,6 +70,7 @@ model Kpi {
   unit        String
   status      Status
   aiGenerated Boolean  @default(false)
+  notes       String?
   employee    Employee    @relation(fields: [employeeId], references: [id], onDelete: Cascade)
   employeeId  String
   cycle       ReviewCycle @relation(fields: [cycleId], references: [id])

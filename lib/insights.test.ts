@@ -56,6 +56,7 @@ function makeKpi(overrides: Partial<Kpi>): Kpi {
     unit: "%",
     status: "ON_TRACK",
     aiGenerated: false,
+    notes: null,
     employeeId: "e1",
     cycleId: "cycle-1",
     createdAt: "2026-07-01T00:00:00.000Z",

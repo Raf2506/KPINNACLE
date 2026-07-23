@@ -28,6 +28,7 @@ export interface Kpi {
   unit: string;
   status: Status;
   aiGenerated: boolean;
+  notes: string | null;
   employeeId: string;
   cycleId: string;
   createdAt: string;

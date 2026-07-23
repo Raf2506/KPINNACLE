@@ -25,6 +25,7 @@ export const kpiInputSchema = z.object({
   cycleId: z.string().min(1, "Review cycle is required"),
   /** Set by the AI KPI Generator's "Apply selected" flow. */
   aiGenerated: z.boolean().optional().default(false),
+  notes: z.string().trim().max(2000).optional(),
 });
 
 export const kpiUpdateSchema = kpiInputSchema.partial();
