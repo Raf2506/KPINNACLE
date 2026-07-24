@@ -86,6 +86,17 @@ export default function GuidePage() {
         </p>
       </header>
 
+      <div className="overflow-hidden rounded-xl border border-border">
+        {/* eslint-disable-next-line @next/next/no-img-element -- animated GIF, next/image would strip the animation */}
+        <img
+          src="/kpinnacle-walkthrough.gif"
+          alt="Walkthrough: viewing the dashboard, opening the Add KPI form, browsing this guide, and reviewing the AI panels"
+          width={1280}
+          height={800}
+          className="w-full"
+        />
+      </div>
+
       <div className="space-y-4">
         {STEPS.map((step) => (
           <Card key={step.number}>
