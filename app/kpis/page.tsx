@@ -15,6 +15,7 @@ import { KpiGeneratorDialog } from "@/components/kpi-generator-dialog";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { EmptyState } from "@/components/empty-state";
 import { ErrorState } from "@/components/error-state";
+import { KpiTipsCallout } from "@/components/kpi-tips-callout";
 import type { Kpi } from "@/lib/types";
 
 export default function KpisPage() {
@@ -75,6 +76,8 @@ function KpisPageContent() {
           />
         </div>
       </div>
+
+      <KpiTipsCallout />
 
       <Card>
         <CardContent>

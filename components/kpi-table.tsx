@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ArrowDown, ArrowUp, ArrowUpDown, Download, Search, StickyNote } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, Download, Info, Search, StickyNote } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   Table,
@@ -160,23 +160,42 @@ export function KpiTable({
     label,
     sortKeyName,
     className,
+    hint,
   }: {
     label: string;
     sortKeyName: SortKey;
     className?: string;
+    hint?: string;
   }) {
     const isActive = sortKey === sortKeyName;
     const Icon = !isActive ? ArrowUpDown : sortDir === "asc" ? ArrowUp : ArrowDown;
     return (
       <TableHead className={className} aria-sort={isActive ? (sortDir === "asc" ? "ascending" : "descending") : "none"}>
-        <button
-          type="button"
-          onClick={() => toggleSort(sortKeyName)}
-          className="flex cursor-pointer items-center gap-1 text-left font-medium text-foreground hover:text-primary"
-        >
-          {label}
-          <Icon className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
-        </button>
+        <span className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => toggleSort(sortKeyName)}
+            className="flex cursor-pointer items-center gap-1 text-left font-medium text-foreground hover:text-primary"
+          >
+            {label}
+            <Icon className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
+          </button>
+          {hint && (
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <span
+                    className="inline-flex cursor-help items-center text-muted-foreground/70 hover:text-muted-foreground"
+                    aria-label={`What is ${label}?`}
+                  />
+                }
+              >
+                <Info className="h-3.5 w-3.5" aria-hidden="true" />
+              </TooltipTrigger>
+              <TooltipContent className="max-w-56">{hint}</TooltipContent>
+            </Tooltip>
+          )}
+        </span>
       </TableHead>
     );
   }
@@ -315,8 +334,17 @@ export function KpiTable({
               {showEmployeeColumn && <SortHeader label="Employee" sortKeyName="employee" />}
               <SortHeader label="Category" sortKeyName="category" />
               <TableHead>Current / Target</TableHead>
-              <SortHeader label="Weight" sortKeyName="weight" className="text-right" />
-              <SortHeader label="Achievement" sortKeyName="achievement" />
+              <SortHeader
+                label="Weight"
+                sortKeyName="weight"
+                className="text-right"
+                hint="How much this KPI counts toward the employee's overall score. One employee's KPI weights should add up to 100%."
+              />
+              <SortHeader
+                label="Achievement"
+                sortKeyName="achievement"
+                hint="Current ÷ Target, capped between 0% and 100%."
+              />
               <SortHeader label="Status" sortKeyName="status" />
               {renderActions && <TableHead className="text-right">Actions</TableHead>}
             </TableRow>
